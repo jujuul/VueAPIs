@@ -26,5 +26,10 @@ export default new Router({
             path: '/nextTick',
             component: () => import('@/views/nextTick')
         },
+        {
+            name: 'Filter',
+            path: '/filter',
+            component: () => import('@/views/filter')
+        },
     ]
 })
