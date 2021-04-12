@@ -24,10 +24,7 @@
     <div v-for="(item, index) in this.form.sku_arr" :key="index">
       <div style="margin-top:20px">
         {{ item.attr
-        }}<el-popover
-          placement="top"
-          width="240"
-        >
+        }}<el-popover placement="top" width="240">
           <div style="display: flex; grid-gap: 10px;">
             <el-input
               ref="addValueInput"
@@ -88,11 +85,12 @@ export default {
     },
     addItem(kndex) {
       console.log(kndex);
+      const len = this.form.sku_arr[kndex]["valueList"].length;
       console.log(this.form.sku_arr);
       console.log(this.form.sku_arr[kndex]);
       this.form.sku_arr[kndex]["valueList"].push({
         name: this.add_item,
-        id: kndex,
+        id: len,
       });
       this.add_item_popover_bool = false;
       this.add_item = "";
