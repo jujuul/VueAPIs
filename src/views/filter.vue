@@ -1,13 +1,15 @@
 <template>
   <div>
     <div v-for="(r, index) in item" :key="index">
-      {{ r | replaceNumToChs }}
+      <td :class="r | replaceNumToChs | setStatusStyle">
+        {{ r | replaceNumToChs }}
+      </td>
     </div>
   </div>
 </template>
 
 <script>
-import { replaceNumToChs } from "@/filters";
+import { replaceNumToChs, setStatusStyle } from "@/filters";
 export default {
   data() {
     return {
@@ -16,8 +18,22 @@ export default {
   },
   filters: {
     replaceNumToChs,
+    setStatusStyle,
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+.one {
+  color: red;
+}
+.two {
+  color: yellow;
+}
+.three {
+  color: greenyellow;
+}
+.four {
+  color: aqua;
+}
+</style>

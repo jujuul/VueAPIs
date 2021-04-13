@@ -42,14 +42,13 @@
         >
           <!-- 属性 -->
           <div>
-            <!-- <el-input
+            <el-input
               v-model.trim="item.attr"
               placeholder="属性"
               style="width: 120px;"
               @focus="attrFocus(item.attr)"
               @blur="attrBlur(item.attr)"
-            ></el-input> -->
-            {{ item.attr }}
+            ></el-input>
             <el-button
               type="danger"
               size="mini"
@@ -63,40 +62,6 @@
           <!-- 属性值 -->
           <div style="display: flex; margin-top: 10px;">
             <div
-              v-for="(ktem, kndex) in item.valueList"
-              :key="kndex"
-              style="margin-right: 20px;"
-            >
-              <el-input
-                size="small"
-                ref="attrValueInput"
-                v-model.trim="item.valueList[kndex].name"
-                placeholder="值"
-                style="width: 100px;"
-                @focus="attrValueFocus(item.valueList[kndex].name)"
-                @blur="newAttrValueBlur(item.attr, item.valueList[kndex])"
-              ></el-input>
-
-              <el-button
-                v-if="item.valueList.length > 1"
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                circle
-                @click="
-                  deleteSmall(index, kndex, item.attr, item.valueList[kndex])
-                "
-              />
-            </div>
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="item.valueList.includes('')"
-              icon="el-icon-plus"
-              @click="addAttributeValue(index)"
-              >添加值</el-button
-            >
-            <!-- <div
               v-for="(ktem, kndex) in item.valueList"
               :key="kndex"
               style="margin-right: 20px;"
@@ -121,9 +86,17 @@
                   deleteSmall(index, kndex, item.attr, item.valueList[kndex])
                 "
               />
-            </div> -->
+            </div>
 
-            <!-- <el-popover
+            <!-- <el-button
+              type="primary"
+              size="mini"
+              :disabled="item.valueList.includes('')"
+              icon="el-icon-plus"
+              @click="addAttributeValue(index)"
+              >添加值</el-button
+            > -->
+            <el-popover
               placement="top"
               width="240"
               v-model="add_item_popover_bool"
@@ -147,7 +120,7 @@
                 style="margin-left: 40px;"
                 >添加值</el-button
               >
-            </el-popover> -->
+            </el-popover>
           </div>
         </div>
 
@@ -313,10 +286,11 @@ export default {
       if (!this.add_value) return;
       this.form.sku_arr.push({
         attr: this.add_value,
-        valueList: [{ itemId: 0 }],
+        valueList: [],
         groupId: this.maxGroupId,
       });
       this.maxGroupId += 1;
+      console.log(this.form.sku_arr);
       this.generateTableColumn();
       this.traverseSku();
 
@@ -354,6 +328,7 @@ export default {
       console.log("attrBlur");
       // 如果 '新值等于旧值' 或者 '空' 什么也不做
       if (newVal === old_attr || newVal === "") return;
+
       // 生成处理表头数据和表格数据
       this.generateTableColumn();
       this.traverseSku();
@@ -369,32 +344,31 @@ export default {
 
     // 添加属性值
     async addAttributeValue(idx) {
-      const length = this.form.sku_arr[idx].valueList[
-        this.form.sku_arr[idx].valueList.length - 1
-      ].itemId;
-      console.log(length);
-      this.form.sku_arr[idx].valueList.push({
-        itemId: length,
-      });
+      console.log(idx);
+      this.form.sku_arr[idx].valueList.push("");
       // 让新增的输入框获得焦点
       await this.$nextTick();
       this.$refs.attrValueInput[this.$refs.attrValueInput.length - 1].focus();
     },
     // 属性值获得焦点时 得到旧的值 在输入框失去焦点的时候, 如果值没有变化, 则什么也不做
     attrValueFocus(oldVal) {
-      // console.log(oldVal);
+      console.log(oldVal);
       old_attr_value = oldVal;
     },
     // 属性值失去焦点时, 操作表格数据 (新版本 可以实现无限个规格)
     newAttrValueBlur(curr_attr, newVal) {
+      console.log(1);
       if (newVal === old_attr_value) return;
+      // console.log(this.form.sku_arr);
       //  这里根据规格生成的笛卡尔积计算出table中需要改变的行索引 ( 包含新增和修改 )
       let cartesian_arr = this.generateBaseData(this.form.sku_arr);
+      console.log(cartesian_arr);
       let change_idx_arr = []; // 需要被改变的行的索引
       for (let i in cartesian_arr) {
         if (cartesian_arr[i][curr_attr] === newVal)
           change_idx_arr.push(Number(i));
       }
+      console.log("change_idx_arr", change_idx_arr);
 
       // 新的表格应该有的长度与现有的表格长度比较, 区分新增还是修改
       let length_arr = this.form.sku_arr.map((x) => x.valueList.length);
@@ -402,6 +376,7 @@ export default {
         (acc, curr_item) => acc * curr_item
       ); // 新的表格数据长度 求乘积
       let old_table_length = this.form.table_data.length; // 旧的表格数据长度
+
       // 如果是修改
       if (new_table_length === old_table_length) {
         this.form.table_data.forEach((item, index) => {
@@ -504,8 +479,9 @@ export default {
     },
     // 遍历 `sku_arr` 生成表格数据
     traverseSku() {
-      // console.log(2);
+      console.log(2);
       let ready_map = this.generateBaseData(this.form.sku_arr);
+      console.log(ready_map);
       this.form.table_data = this.mergeTableData(ready_map);
     },
     // 重新实现笛卡尔积  入参是: this.form.sku_arr 传入的数组 '为空', '长度为1', '长度大于1' 三种情况 分别处理
@@ -514,23 +490,25 @@ export default {
       if (arr.length === 1) {
         let [item_spec] = arr;
         return item_spec.valueList.map((x) => {
+          console.log(x.name);
           return {
             [item_spec.attr]: x.name,
           };
         });
       }
+
       console.log(arr);
       if (arr.length >= 1) {
         return arr.reduce((accumulator, spec_item) => {
-          console.log(accumulator);
+          console.log(Array.isArray(accumulator.valueList));
           let acc_value_list = Array.isArray(accumulator.valueList)
             ? accumulator.valueList.map((item) => {
-                console.log(item);
                 return item.name;
               })
             : accumulator;
           console.log(acc_value_list);
           console.log(spec_item);
+          console.log(spec_item.valueList);
           let item_value_list = spec_item.valueList;
           console.log(item_value_list);
           let result = [];
@@ -538,7 +516,7 @@ export default {
             for (let j in item_value_list) {
               let temp_data = {};
               // 如果是对象
-              if (acc_value_list[i]?.constructor === Object) {
+              if (acc_value_list[i].constructor === Object) {
                 temp_data = {
                   ...acc_value_list[i],
                   [spec_item.attr]: item_value_list[j],
@@ -558,10 +536,10 @@ export default {
     },
 
     onSubmit() {
-      console.log(this.form.sku_arr);
-      console.log(this.form.table_data);
+      console.log("进来了");
       this.$refs.form.validate(async (valid, object) => {
         if (!valid) {
+          console.log("没通过");
           // 获取元素距离body顶部的距离
           let getTop = (dom) => {
             let top = dom.offsetTop;
@@ -579,6 +557,10 @@ export default {
           });
           return;
         }
+        console.log("通过");
+
+        console.log(this.form.sku_arr);
+        console.log(this.form.table_data);
         this.btn_loading = true;
       });
     },

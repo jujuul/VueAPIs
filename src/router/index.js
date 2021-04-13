@@ -36,5 +36,10 @@ export default new Router({
             path: '/filter',
             component: () => import('@/views/filter')
         },
+        {
+            name: 'Directive',
+            path: '/directive',
+            component: () => import('@/views/directive')
+        },
     ]
 })
