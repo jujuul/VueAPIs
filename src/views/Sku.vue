@@ -42,13 +42,6 @@
         >
           <!-- 属性 -->
           <div>
-            <!-- <el-input
-              v-model.trim="item.attr"
-              placeholder="属性"
-              style="width: 120px;"
-              @focus="attrFocus(item.attr)"
-              @blur="attrBlur(item.attr)"
-            ></el-input> -->
             {{ item.attr }}
             <el-button
               type="danger"
@@ -96,58 +89,6 @@
               @click="addAttributeValue(index)"
               >添加值</el-button
             >
-            <!-- <div
-              v-for="(ktem, kndex) in item.valueList"
-              :key="kndex"
-              style="margin-right: 20px;"
-            >
-              <el-input
-                size="small"
-                ref="attrValueInput"
-                v-model.trim="item.valueList[kndex]['name']"
-                placeholder="值"
-                style="width: 100px;"
-                @focus="attrValueFocus(item.valueList[kndex])"
-                @blur="newAttrValueBlur(item.attr, item.valueList[kndex])"
-              ></el-input>
-
-              <el-button
-                v-if="item.valueList.length > 1"
-                type="danger"
-                size="mini"
-                icon="el-icon-delete"
-                circle
-                @click="
-                  deleteSmall(index, kndex, item.attr, item.valueList[kndex])
-                "
-              />
-            </div> -->
-
-            <!-- <el-popover
-              placement="top"
-              width="240"
-              v-model="add_item_popover_bool"
-            >
-              <div style="display: flex; grid-gap: 10px;">
-                <el-input
-                  ref="addValueInput"
-                  v-model.trim="add_item"
-                  @keyup.enter.native="confirmItem(index)"
-                />
-                <el-button type="primary" @click="confirmItem(index)"
-                  >确定</el-button
-                >
-              </div>
-              <el-button
-                slot="reference"
-                size="small"
-                type="primary"
-                icon="el-icon-plus"
-                :disabled="attrBtnDisabled"
-                style="margin-left: 40px;"
-                >添加值</el-button
-              >
-            </el-popover> -->
           </div>
         </div>
 
@@ -325,8 +266,6 @@ export default {
     },
     // 添加子项
     confirmItem(idx) {
-      console.log(this.add_item_popover_bool);
-      console.log(this.form.table_data);
       if (!this.add_item) return;
       if (this.form.sku_arr[idx].valueList.length < 1) {
         this.form.sku_arr[idx].valueList.push({
@@ -351,7 +290,6 @@ export default {
     },
     // 属性失去焦点时
     attrBlur(newVal) {
-      console.log("attrBlur");
       // 如果 '新值等于旧值' 或者 '空' 什么也不做
       if (newVal === old_attr || newVal === "") return;
       // 生成处理表头数据和表格数据
@@ -372,9 +310,8 @@ export default {
       const length = this.form.sku_arr[idx].valueList[
         this.form.sku_arr[idx].valueList.length - 1
       ].itemId;
-      console.log(length);
       this.form.sku_arr[idx].valueList.push({
-        itemId: length,
+        itemId: length + 1,
       });
       // 让新增的输入框获得焦点
       await this.$nextTick();
@@ -382,20 +319,21 @@ export default {
     },
     // 属性值获得焦点时 得到旧的值 在输入框失去焦点的时候, 如果值没有变化, 则什么也不做
     attrValueFocus(oldVal) {
-      // console.log(oldVal);
+      console.log(oldVal);
       old_attr_value = oldVal;
     },
     // 属性值失去焦点时, 操作表格数据 (新版本 可以实现无限个规格)
     newAttrValueBlur(curr_attr, newVal) {
+      console.log("失去焦点");
       if (newVal === old_attr_value) return;
       //  这里根据规格生成的笛卡尔积计算出table中需要改变的行索引 ( 包含新增和修改 )
       let cartesian_arr = this.generateBaseData(this.form.sku_arr);
+      console.log(cartesian_arr);
       let change_idx_arr = []; // 需要被改变的行的索引
       for (let i in cartesian_arr) {
-        if (cartesian_arr[i][curr_attr] === newVal)
+        if (cartesian_arr[i][curr_attr] === newVal.name)
           change_idx_arr.push(Number(i));
       }
-
       // 新的表格应该有的长度与现有的表格长度比较, 区分新增还是修改
       let length_arr = this.form.sku_arr.map((x) => x.valueList.length);
       let new_table_length = length_arr.reduce(
@@ -406,7 +344,7 @@ export default {
       if (new_table_length === old_table_length) {
         this.form.table_data.forEach((item, index) => {
           if (change_idx_arr.includes(index))
-            this.form.table_data[index][curr_attr] = newVal;
+            this.form.table_data[index][curr_attr] = newVal.name;
         });
         return;
       }
@@ -419,7 +357,6 @@ export default {
             return {
               attr: item.attr,
               valueList: [newVal],
-              // itemId:
             };
         });
         // 得到新增的表格数据
@@ -433,16 +370,17 @@ export default {
     // 删除属性值 四个参数：'一级数组索引', '二级索引', '属性名字', '属性值'  后两个参数用来删除行
     deleteSmall(idx, kdx, attr_name, attr_val) {
       this.form.sku_arr[idx].valueList.splice(kdx, 1);
-
-      // 删除table行
       let data_length = this.form.table_data.length;
       for (let i = 0; i < data_length; i++) {
-        if (this.form.table_data[i][attr_name] == attr_val) {
+        console.log(this.form.table_data[i][attr_name]);
+        console.log(attr_val);
+        if (this.form.table_data[i][attr_name] == attr_val.name) {
           this.form.table_data.splice(i, 1);
           i = i - 1;
           data_length = data_length - 1;
         }
       }
+      console.log(this.form.table_data);
     },
 
     // 根据 `this.form.sku_arr` 生成表格列, `table_column` 用于 el-table-column 的 v-for
@@ -504,7 +442,6 @@ export default {
     },
     // 遍历 `sku_arr` 生成表格数据
     traverseSku() {
-      // console.log(2);
       let ready_map = this.generateBaseData(this.form.sku_arr);
       this.form.table_data = this.mergeTableData(ready_map);
     },
@@ -519,20 +456,14 @@ export default {
           };
         });
       }
-      console.log(arr);
       if (arr.length >= 1) {
         return arr.reduce((accumulator, spec_item) => {
-          console.log(accumulator);
           let acc_value_list = Array.isArray(accumulator.valueList)
             ? accumulator.valueList.map((item) => {
-                console.log(item);
                 return item.name;
               })
             : accumulator;
-          console.log(acc_value_list);
-          console.log(spec_item);
           let item_value_list = spec_item.valueList;
-          console.log(item_value_list);
           let result = [];
           for (let i in acc_value_list) {
             for (let j in item_value_list) {
@@ -541,13 +472,12 @@ export default {
               if (acc_value_list[i]?.constructor === Object) {
                 temp_data = {
                   ...acc_value_list[i],
-                  [spec_item.attr]: item_value_list[j],
+                  [spec_item.attr]: item_value_list[j].name,
                 };
-
                 // 否则如果是字符串
               } else {
                 temp_data[accumulator.attr] = acc_value_list[i];
-                temp_data[spec_item.attr] = item_value_list[j];
+                temp_data[spec_item.attr] = item_value_list[j].name;
               }
               result.push(temp_data);
             }
