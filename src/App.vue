@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-    <router-link to="/sku">Sku</router-link>
-    <router-link to="/ssskkkuuu">Sku</router-link>
+    <Loading />
+    <router-link to="/observable">observable</router-link>
+    <!-- <router-link to="/sku">Sku</router-link> -->
+    <!-- <router-link to="/ssskkkuuu">Sku</router-link> -->
     <!-- <router-link to="/filter">filter</router-link> -->
     <!-- <router-link to="/directive">directive</router-link> -->
     <!-- <router-link to="/extend">Extend</router-link> -->

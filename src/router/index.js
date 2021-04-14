@@ -41,5 +41,10 @@ export default new Router({
             path: '/directive',
             component: () => import('@/views/directive')
         },
+        {
+            name: 'Observable',
+            path: '/observable',
+            component: () => import('@/views/observable')
+        },
     ]
 })
