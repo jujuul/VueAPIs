@@ -2,7 +2,9 @@
   <div id="app">
     <Loading />
     <!-- <router-link to="/observable">observable</router-link> -->
-    <router-link to="/sku">Sku</router-link>
+    <!-- <router-link to="/sku">Sku</router-link> -->
+    <router-link to="/slot">slot</router-link>
+    <!-- <router-link to="/function">Function</router-link> -->
     <!-- <router-link to="/ssskkkuuu">Sku</router-link> -->
     <!-- <router-link to="/filter">filter</router-link> -->
     <!-- <router-link to="/directive">directive</router-link> -->

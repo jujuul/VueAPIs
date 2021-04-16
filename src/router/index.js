@@ -46,5 +46,15 @@ export default new Router({
             path: '/observable',
             component: () => import('@/views/observable')
         },
+        {
+            name: 'Function',
+            path: '/function',
+            component: () => import('@/views/Function')
+        },
+        {
+            name: 'Slot',
+            path: '/slot',
+            component: () => import('@/views/slot')
+        },
     ]
 })
