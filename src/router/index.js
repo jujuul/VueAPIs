@@ -17,11 +17,6 @@ export default new Router({
             component: () => import('@/views/Sku')
         },
         {
-            name: 'Sku',
-            path: '/ssskkkuuu',
-            component: () => import('@/views/ssskkkuuu')
-        },
-        {
             name: 'Mixin',
             path: '/mixin',
             component: () => import('@/views/Mixin')
@@ -45,6 +40,11 @@ export default new Router({
             name: 'Observable',
             path: '/observable',
             component: () => import('@/views/observable')
+        },
+        {
+            name: 'Slot',
+            path: '/slot',
+            component: () => import('@/views/slot')
         },
     ]
 })

@@ -6,15 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .a {
+            display: inline-block;
+            width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 
 <body>
     <script>
-        const arr = [1,2,3,4,5]
-        arr.reverse()
-        console.log(arr)
-        arr.sort()
-        console.log(arr)
+        const num = [0, 1, 2, 3, 4].reduce(function (accumulator, currentValue, currentIndex, array) {
+            return accumulator + currentValue
+        }, 20)
+        console.log(num)
+
+        const num1 = [0, 1, 2, 3, 4].reduceRight(function (accumulator, currentValue, currentIndex, array) {
+            return accumulator + currentValue
+        }, 20)
+        console.log(num1)
     </script>
 </body>
 
